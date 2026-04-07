@@ -28,7 +28,7 @@ window.toggleSeat = function(seatId) {
 
 window.resetAll = function() {
     let updates = {};
-    for(let i = 1; i <= 24; i++) {
+    for(let i = 1; i <= 35; i++) {
         updates['T' + i] = 0;
     }
     set(ref(db, 'seats'), updates);
@@ -74,7 +74,7 @@ onValue(ref(db, 'seats'), (snapshot) => {
     
     // 1. Das Lehrer-Grid aktualisieren
     if (!mySeatParam) {
-        for(let i = 1; i <= 24; i++) {
+        for(let i = 1; i <= 35; i++) {
             let seatId = 'T' + i;
             let state = data[seatId] !== undefined ? data[seatId] : 0;
             
