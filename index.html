@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitzplan Ampel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Klassenraum Übersicht</h1>
+    
+    <div class="teacher-desk">Lehrerpult (Tafel)</div>
+
+    <!-- Raster für 24 Schüler (6 Spalten, 4 Reihen) -->
+    <div class="classroom">
+        <!-- Reihe 1 -->
+        <div class="seat" id="T1" data-state="0" onclick="toggleSeat('T1')">1</div>
+        <div class="seat" id="T2" data-state="0" onclick="toggleSeat('T2')">2</div>
+        <div class="seat" id="T3" data-state="0" onclick="toggleSeat('T3')">3</div>
+        <div class="seat" id="T4" data-state="0" onclick="toggleSeat('T4')">4</div>
+        <div class="seat" id="T5" data-state="0" onclick="toggleSeat('T5')">5</div>
+        <div class="seat" id="T6" data-state="0" onclick="toggleSeat('T6')">6</div>
+
+        <!-- Reihe 2 -->
+        <div class="seat" id="T7" data-state="0" onclick="toggleSeat('T7')">7</div>
+        <div class="seat" id="T8" data-state="0" onclick="toggleSeat('T8')">8</div>
+        <div class="seat" id="T9" data-state="0" onclick="toggleSeat('T9')">9</div>
+        <div class="seat" id="T10" data-state="0" onclick="toggleSeat('T10')">10</div>
+        <div class="seat" id="T11" data-state="0" onclick="toggleSeat('T11')">11</div>
+        <div class="seat" id="T12" data-state="0" onclick="toggleSeat('T12')">12</div>
+
+        <!-- Reihe 3 -->
+        <div class="seat" id="T13" data-state="0" onclick="toggleSeat('T13')">13</div>
+        <div class="seat" id="T14" data-state="0" onclick="toggleSeat('T14')">14</div>
+        <div class="seat" id="T15" data-state="0" onclick="toggleSeat('T15')">15</div>
+        <div class="seat" id="T16" data-state="0" onclick="toggleSeat('T16')">16</div>
+        <div class="seat" id="T17" data-state="0" onclick="toggleSeat('T17')">17</div>
+        <div class="seat" id="T18" data-state="0" onclick="toggleSeat('T18')">18</div>
+
+        <!-- Reihe 4 -->
+        <div class="seat" id="T19" data-state="0" onclick="toggleSeat('T19')">19</div>
+        <div class="seat" id="T20" data-state="0" onclick="toggleSeat('T20')">20</div>
+        <div class="seat" id="T21" data-state="0" onclick="toggleSeat('T21')">21</div>
+        <div class="seat" id="T22" data-state="0" onclick="toggleSeat('T22')">22</div>
+        <div class="seat" id="T23" data-state="0" onclick="toggleSeat('T23')">23</div>
+        <div class="seat" id="T24" data-state="0" onclick="toggleSeat('T24')">24</div>
+    </div>
+
+    <!-- Lehrer-Bereich -->
+    <div class="teacher-controls">
+        <button onclick="resetAll()">Alle zurücksetzen (Neustart)</button>
+    </div>
+
+    <!-- Das JS als Modul laden -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
