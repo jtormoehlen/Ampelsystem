@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-// TODO: Diese Konfiguration ersetzt du mit den Daten aus deinem Firebase-Projekt
+// TODO: Trage hier DEINE Firebase-Daten ein!
 const firebaseConfig = {
   apiKey: "AIzaSyA0DpG6n-odd5XX7MEQBgyapug-xVoY_R8",
   authDomain: "ampelsystem-12f61.firebaseapp.com",
@@ -13,33 +13,34 @@ const firebaseConfig = {
   measurementId: "G-HC2BV52LY4"
 };
 
-
-// Firebase initialisieren
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let isCooldown = false; // Spam-Schutz
+let isCooldown = false;
 
-// 1. URL auslesen
+// Prüfen, ob die URL einen Parameter hat (z.B. ?platz=T5)
 const urlParams = new URLSearchParams(window.location.search);
-const mySeatParam = urlParams.get('platz'); // Sucht nach "?platz=T5"
+const mySeatParam = urlParams.get('platz');
 
-// 2. Ansichten steuern
 if (mySeatParam) {
-    // SCHÜLER-MODUS
-    document.getElementById('teacher-view').style.display = 'none'; // Grid verstecken
-    document.getElementById('student-view').style.display = 'block'; // Einzelbutton zeigen
+    // ==========================================
+    // MODUS: SCHÜLER (Einzelansicht)
+    // ==========================================
     
-    // Titel anpassen (z.B. "T5" -> "5")
+    // Lehrer-Ansicht verstecken, Schüler-Ansicht zeigen
+    document.getElementById('teacher-view').style.display = 'none';
+    document.getElementById('student-view').style.display = 'block';
+    
+    // Titel anpassen ("T5" wird zu "Tisch 5")
     document.getElementById('student-title').innerText = "Tisch " + mySeatParam.replace('T', '');
     
-    // Den großen Button mit dem Firebase-Wert verknüpfen
     const myBtn = document.getElementById('my-seat-btn');
     
+    // Klick-Verhalten für den großen Button
     myBtn.onclick = function() {
-        if (isCooldown) return; // Klick ignorieren, wenn Cooldown aktiv
+        if (isCooldown) return; // Wenn Cooldown aktiv ist, Klick ignorieren
         
-        // Cooldown aktivieren (3 Sekunden)
+        // Cooldown für 3 Sekunden aktivieren
         isCooldown = true;
         document.getElementById('cooldown-msg').style.display = 'block';
         setTimeout(() => {
@@ -47,76 +48,67 @@ if (mySeatParam) {
             document.getElementById('cooldown-msg').style.display = 'none';
         }, 3000);
 
-        // Firebase Update (wie bisher)
+        // Nächsten Status berechnen (0 -> 1 -> 2 -> 0)
         let currentState = parseInt(myBtn.getAttribute('data-state')) || 0;
         let newState = (currentState + 1) % 3;
         
-        // Optisches Feedback für den großen Button
-        myBtn.setAttribute('data-state', newState);
-        if(newState === 0) myBtn.innerText = "Hilfe rufen";
-        if(newState === 1) myBtn.innerText = "Hilfe (nicht dringend)";
-        if(newState === 2) myBtn.innerText = "Hilfe (dringend!)";
-        
-        // An Firebase senden
+        // In die Datenbank schreiben
         set(ref(db, 'seats/' + mySeatParam), newState);
     };
 
 } else {
-    // LEHRER-MODUS (Die URL hat keinen "?platz="-Parameter)
-    // Alles bleibt sichtbar. Du brauchst hier keinen Cooldown, 
-    // da du als Lehrer die volle Kontrolle haben willst.
+    // ==========================================
+    // MODUS: LEHRER (Grid-Ansicht)
+    // ==========================================
+    
+    // Funktion für Klicks im Grid durch den Lehrer (z.B. um einem Schüler den Status wegzunehmen)
+    window.toggleSeat = function(seatId) {
+        const el = document.getElementById(seatId);
+        let currentState = parseInt(el.getAttribute('data-state')) || 0;
+        let newState = (currentState + 1) % 3;
+        set(ref(db, 'seats/' + seatId), newState);
+    };
+
+    // Funktion für den "Alle zurücksetzen" Button
+    window.resetAll = function() {
+        let updates = {};
+        for(let i = 1; i <= 24; i++) {
+            updates['T' + i] = 0;
+        }
+        set(ref(db, 'seats'), updates);
+    };
 }
 
-// Funktion, die beim Klick auf einen Sitzplatz aufgerufen wird
-window.toggleSeat = function(seatId) {
-    const el = document.getElementById(seatId);
-    
-    // Aktuellen Status auslesen (0, 1 oder 2)
-    let currentState = parseInt(el.getAttribute('data-state')) || 0;
-    
-    // Status hochzählen: 0 -> 1 -> 2 -> 0
-    let newState = (currentState + 1) % 3;
-    
-    // Optisch sofort für den Klickenden ändern (fühlt sich schneller an)
-    el.setAttribute('data-state', newState);
-    
-    // Neuen Status an Firebase senden
-    set(ref(db, 'seats/' + seatId), newState);
-};
-
-// Button: Alle Plätze wieder auf Grau (0) setzen
-window.resetAll = function() {
-    let updates = {};
-    for(let i = 1; i <= 24; i++) {
-        updates['T' + i] = 0;
-    }
-    // Alle Werte auf einmal in der Datenbank überschreiben
-    set(ref(db, 'seats'), updates);
-};
-
-// Listener: Hört in Echtzeit auf alle Änderungen
+// ==========================================
+// ECHTZEIT-UPDATE (Gilt für Lehrer UND Schüler)
+// ==========================================
 onValue(ref(db, 'seats'), (snapshot) => {
     const data = snapshot.val() || {};
     
-    // Update für die Lehrer-Ansicht (das Grid)
-    for(let i = 1; i <= 24; i++) {
-        let seatId = 'T' + i;
-        let state = data[seatId] !== undefined ? data[seatId] : 0;
-        
-        let el = document.getElementById(seatId);
-        if (el) el.setAttribute('data-state', state);
+    // 1. Das Lehrer-Grid aktualisieren (falls der Lehrer zuschaut)
+    if (!mySeatParam) {
+        for(let i = 1; i <= 24; i++) {
+            let seatId = 'T' + i;
+            let state = data[seatId] !== undefined ? data[seatId] : 0;
+            
+            let el = document.getElementById(seatId);
+            if (el) el.setAttribute('data-state', state);
+        }
     }
     
-    // Update für die Schüler-Ansicht (den großen Button),
-    // falls der Lehrer am Pult auf "Reset" gedrückt hat!
+    // 2. Den großen Schüler-Button aktualisieren (falls ein Schüler zuschaut)
+    // Wichtig: Wenn der Lehrer auf "Reset" klickt, muss der Button des Schülers wieder auf Grau springen!
     if (mySeatParam) {
         let myState = data[mySeatParam] !== undefined ? data[mySeatParam] : 0;
         let myBtn = document.getElementById('my-seat-btn');
+        
         if (myBtn) {
             myBtn.setAttribute('data-state', myState);
-            if(myState === 0) myBtn.innerText = "Hilfe rufen";
-            if(myState === 1) myBtn.innerText = "Hilfe (nicht dringend)";
-            if(myState === 2) myBtn.innerText = "Hilfe (dringend!)";
+            
+            // Text im Button passend zur Farbe anpassen
+            if(myState === 0) myBtn.innerText = "Alles okay / Hilfe rufen";
+            if(myState === 1) myBtn.innerText = "Ich brauche Hilfe (nicht dringend)";
+            if(myState === 2) myBtn.innerText = "Ich brauche dringend Hilfe!";
         }
     }
 });
