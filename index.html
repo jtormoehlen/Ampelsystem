@@ -10,7 +10,31 @@
 
     <h1>Klassenraum Übersicht</h1>
     
-    <div class="teacher-desk">Lehrerpult (Tafel)</div>
+    <!-- <div class="teacher-desk">Lehrerpult (Tafel)</div> -->
+
+    <!-- NEU: Der Schüler-Bereich (standardmäßig versteckt) -->
+    <div id="student-view" style="display: none; text-align: center; margin-top: 50px;">
+        <h2 id="student-title">Mein Platz</h2>
+        <div class="seat" id="my-seat-btn" data-state="0" style="width: 200px; height: 200px; font-size: 2rem; margin: 0 auto;">
+            Hilfe rufen
+        </div>
+        <p id="cooldown-msg" style="color: red; display: none;">Bitte kurz warten...</p>
+    </div>
+
+    <!-- LEHRER-BEREICH: Wir packen alles Bisherige in einen Div mit ID -->
+    <div id="teacher-view">
+        <div class="teacher-desk">Lehrerpult (Tafel)</div>
+        
+        <div class="classroom">
+            <!-- Hier bleiben deine 24 Tische genau wie vorher -->
+            <div class="seat" id="T1" data-state="0" onclick="toggleSeat('T1')">1</div>
+            <!-- ... usw ... -->
+        </div>
+
+        <div class="teacher-controls">
+            <button onclick="resetAll()">Alle zurücksetzen (Neustart)</button>
+        </div>
+    </div>
 
     <!-- Raster für 24 Schüler (6 Spalten, 4 Reihen) -->
     <div class="classroom">
