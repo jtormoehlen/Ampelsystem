@@ -22,7 +22,7 @@ window.toggleSeat = function(seatId) {
     const el = document.getElementById(seatId);
     if (!el) return;
     let currentState = parseInt(el.getAttribute('data-state')) || 0;
-    let newState = (currentState + 1) % 3;
+    let newState = (currentState + 1) % 4; // 0, 1, 2, 3 (neu: 3 = "Fertig")
     set(ref(db, 'seats/' + seatId), newState);
 };
 
@@ -94,6 +94,7 @@ onValue(ref(db, 'seats'), (snapshot) => {
             if(myState === 0) myBtn.innerText = "Alles okay / Hilfe rufen";
             if(myState === 1) myBtn.innerText = "Ich brauche Hilfe (nicht dringend)";
             if(myState === 2) myBtn.innerText = "Ich brauche dringend Hilfe!";
+            if(myState === 3) myBtn.innerText = "Ich bin fertig!";
         }
     }
 });
