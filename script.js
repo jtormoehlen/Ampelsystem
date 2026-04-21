@@ -60,7 +60,7 @@ if (mySeatParam) {
         }, 3000);
 
         let currentState = parseInt(myBtn.getAttribute('data-state')) || 0;
-        let newState = (currentState + 1) % 3;
+        let newState = (currentState + 1) % 4; // 0, 1, 2, 3 (neu: 3 = "Fertig")
         
         set(ref(db, 'seats/' + mySeatParam), newState);
     };
