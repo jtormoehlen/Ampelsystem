@@ -34,6 +34,23 @@ window.resetAll = function() {
     set(ref(db, 'seats'), updates);
 };
 
+const TEACHER_PASSWORD = "vlg2026";
+
+window.checkTeacherPassword = function() {
+    const input = document.getElementById('teacher-password-input');
+    const error = document.getElementById('teacher-password-error');
+    if (input.value === TEACHER_PASSWORD) {
+        sessionStorage.setItem('teacherAuthed', 'true');
+        document.getElementById('teacher-lock').style.display = 'none';
+        document.getElementById('teacher-view').style.display = 'block';
+        error.style.display = 'none';
+    } else {
+        error.style.display = 'block';
+        input.value = '';
+        input.focus();
+    }
+};
+
 // Prüfen, ob die URL einen Parameter hat (z.B. ?platz=T5)
 const urlParams = new URLSearchParams(window.location.search);
 const mySeatParam = urlParams.get('platz');
@@ -64,7 +81,21 @@ if (mySeatParam) {
         
         set(ref(db, 'seats/' + mySeatParam), newState);
     };
-} 
+} else {
+    // ==========================================
+    // MODUS: LEHRER (Passwortsperre)
+    // ==========================================
+    if (sessionStorage.getItem('teacherAuthed') === 'true') {
+        document.getElementById('teacher-view').style.display = 'block';
+    } else {
+        document.getElementById('teacher-lock').style.display = 'block';
+        const pwInput = document.getElementById('teacher-password-input');
+        pwInput.focus();
+        pwInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') checkTeacherPassword();
+        });
+    }
+}
 
 // ==========================================
 // ECHTZEIT-UPDATE (Gilt für Lehrer UND Schüler)

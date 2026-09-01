@@ -19,8 +19,17 @@
         <p id="cooldown-msg" style="color: red; display: none; margin-top: 20px; font-weight: bold;">Bitte kurz warten...</p>
     </div>
 
+    <!-- PASSWORT-SPERRE FÜR LEHRER-BEREICH -->
+    <div id="teacher-lock" style="display: none; text-align: center; margin-top: 50px;">
+        <h2>Lehrerübersicht</h2>
+        <p>Bitte Passwort eingeben:</p>
+        <input type="password" id="teacher-password-input" style="padding: 8px; font-size: 1rem; margin-right: 10px;">
+        <button onclick="checkTeacherPassword()">Anmelden</button>
+        <p id="teacher-password-error" style="color: red; display: none; margin-top: 15px;">Falsches Passwort.</p>
+    </div>
+
     <!-- LEHRER-BEREICH -->
-    <div id="teacher-view">
+    <div id="teacher-view" style="display: none;">
         <div class="teacher-desk">Lehrerpult (Tafel)</div>
         
         <!-- Das neue Raster (9x8 Grid) -->
