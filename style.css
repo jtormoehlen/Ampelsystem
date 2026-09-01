@@ -29,7 +29,7 @@ h1 {
     display: grid;
     /* 9 Spalten und 8 Reihen, passend zu deiner Skizze */
     grid-template-columns: repeat(9, 60px);
-    grid-template-rows: repeat(8, 35px);
+    grid-template-rows: repeat(12, 35px);
     gap: 4px; /* Leichter Abstand zwischen den Tischen */
     justify-content: center;
 }
