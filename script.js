@@ -40,7 +40,6 @@ window.checkTeacherPassword = function() {
     const input = document.getElementById('teacher-password-input');
     const error = document.getElementById('teacher-password-error');
     if (input.value === TEACHER_PASSWORD) {
-        sessionStorage.setItem('teacherAuthed', 'true');
         document.getElementById('teacher-lock').style.display = 'none';
         document.getElementById('teacher-view').style.display = 'block';
         error.style.display = 'none';
@@ -85,16 +84,12 @@ if (mySeatParam) {
     // ==========================================
     // MODUS: LEHRER (Passwortsperre)
     // ==========================================
-    if (sessionStorage.getItem('teacherAuthed') === 'true') {
-        document.getElementById('teacher-view').style.display = 'block';
-    } else {
-        document.getElementById('teacher-lock').style.display = 'block';
-        const pwInput = document.getElementById('teacher-password-input');
-        pwInput.focus();
-        pwInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') checkTeacherPassword();
-        });
-    }
+    document.getElementById('teacher-lock').style.display = 'block';
+    const pwInput = document.getElementById('teacher-password-input');
+    pwInput.focus();
+    pwInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkTeacherPassword();
+    });
 }
 
 // ==========================================
